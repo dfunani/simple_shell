@@ -1,25 +1,20 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-#include <sys/wait.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+extern char **environ;
+int cmd_input(char **line, char *filename);
+int cmd_run(char **commands, char *filename);
+int cmd_flags(char **commands, char *filename);
+int path_check(char *path_command);
+char *cmd_path(char *execute_command);
+void cmd_assembly(char *directory, char *command, char **output);
+void cmd_env(void);
 
-#define LSH_TOK_BUFSIZE 64
-#define LSH_TOK_DELIM " \t\r\n\a"
-
-void run_cmd();
-int execute_cmd(char **args);
-char **split_line(char *line);
-char *read_line(void);
-int launch_cmd(char **args);
-int builtins_handler(void);
-int builtins_cd(char **args);
-int builtins_help(char **args);
-int builtins_exit(char **args);
-extern char *builtin_str[3];
-
-extern int (*builtin_func[]) (char **);
 #endif

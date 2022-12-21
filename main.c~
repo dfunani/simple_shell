@@ -1,0 +1,17 @@
+#include "main.h"
+
+/**
+ * main - entry
+ * @argc: count
+ * @argv: inputs
+ *
+ * Return: 0
+ *
+ */
+
+int main(int __attribute__((unused)) argc, char __attribute__((unused)) **argv)
+{
+	run_cmd();
+
+	return EXIT_SUCCESS;
+}

@@ -1,0 +1,109 @@
+#include "main.h"
+
+/**
+ * execute_cmd - run cmds
+ * @args: cmds
+ *
+ * Return: 0
+ *
+ */
+
+int execute_cmd(char **args)
+{
+	int i;
+
+	if (args[0] == NULL) {
+	  return 1;
+	}
+
+	for (i = 0; i < builtins_handler(); i++) {
+		if (strcmp(args[0], builtin_str[i]) == 0) {
+			return (*builtin_func[i])(args);
+		}
+	}
+
+	return launch_cmd(args);
+}
+/**
+ * split_line - entry
+ * @line: input
+ *
+ * Return: ptr to char
+ *
+ */
+
+char **split_line(char *line)
+{
+	int bufsize = LSH_TOK_BUFSIZE, position = 0;
+	char **tokens = malloc(bufsize * sizeof(char*));
+	char *token;
+
+	if (!tokens) {
+		fprintf(stderr, "lsh: allocation error\n");
+		exit(EXIT_FAILURE);
+	}
+
+	token = strtok(line, LSH_TOK_DELIM);
+	while (token != NULL) {
+		tokens[position] = token;
+		position++;
+
+		if (position >= bufsize) {
+			bufsize += LSH_TOK_BUFSIZE;
+			tokens = realloc(tokens, bufsize * sizeof(char*));
+			if (!tokens) {
+				fprintf(stderr, "lsh: allocation error\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+
+		token = strtok(NULL, LSH_TOK_DELIM);
+	}
+	tokens[position] = NULL;
+	return tokens;
+}
+
+/**
+ * read_line - read entry
+ *
+ * Return: char ptr
+ *
+ */
+
+char *read_line(void)
+{
+	char *line = NULL;
+	size_t bufsize = 0;
+
+	if (getline(&line, &bufsize, stdin) == -1){
+		if (feof(stdin)) {
+			exit(EXIT_SUCCESS);
+		} else  {
+			perror("readline");
+			exit(EXIT_FAILURE);
+		}
+	}
+	return line;
+}
+
+/**
+ * run_cmd - entry to loop
+ *
+ */
+
+void run_cmd(void)
+{
+	char *line;
+	char **args;
+	int status;
+
+	do {
+		printf("($) ");
+		line = read_line();
+		args = split_line(line);
+		status = execute_cmd(args);
+
+		free(line);
+		free(args);
+	} while (status);
+}
